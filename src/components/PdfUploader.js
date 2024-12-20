@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for HTTP requests
 import { InboxOutlined } from "@ant-design/icons";
-import { message, Upload } from "antd";
-
+import { message, Upload, Space } from "antd";
+import { Sun } from "lucide-react";
 const { Dragger } = Upload;
 
 const DOMAIN = "http://localhost:5001";
@@ -23,9 +23,74 @@ const uploadToBackend = async (file) => {
   }
 };
 
+const deleteFromBackend = async (file) => {
+  try {
+    const response = await axios.delete(`${DOMAIN}/upload`, {
+      data: { filename: file.name },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error deleting file: ", error);
+    return null;
+  }
+};
+
+const TimeGreeting = ({ username = "Friend" }) => {
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const updateGreeting = () => {
+      const hour = new Date().getHours();
+
+      if (hour >= 5 && hour < 12) {
+        setGreeting("Good morning");
+      } else if (hour >= 12 && hour < 17) {
+        setGreeting("Good afternoon");
+      } else if (hour >= 17 && hour < 21) {
+        setGreeting("Good evening");
+      } else {
+        setGreeting("Good night");
+      }
+    };
+    updateGreeting();
+  }, []);
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <Space align="center">
+        <Sun className="w-6 h-6 text-orange-400" />
+        <h1 className="text-4xl font-serif text-gray-800">
+          {greeting}, {username}
+        </h1>
+      </Space>
+    </div>
+  );
+};
+
 const attributes = {
   name: "file",
   multiple: true,
+  beforeUpload: (file) => {
+    const isPDF = file.type === "application/pdf";
+    if (!isPDF) {
+      message.error(`${file.name} is not a PDF file`);
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLessThan10M = file.size / 1024 / 1024 < 10;
+    if (!isLessThan10M) {
+      message.error("File must be smaller than 10MB");
+      return Upload.LIST_IGNORE;
+    }
+
+    return true;
+  },
   customRequest: async ({ file, onSuccess, onError }) => {
     const response = await uploadToBackend(file);
     if (response && response.status === 200) {
@@ -50,22 +115,35 @@ const attributes = {
   onDrop(e) {
     console.log("Dropped files", e.dataTransfer.files);
   },
+  onRemove: async (file) => {
+    try {
+      await deleteFromBackend(file);
+      message.success(`${file.name} removed successfully`);
+      return true;
+    } catch (error) {
+      message.error(`Failed to remove ${file.name}`);
+      return false;
+    }
+  },
 };
 
 const PdfUploader = () => {
   return (
-    <Dragger {...attributes}>
-      <p className="ant-upload-drag-icon">
-        <InboxOutlined />
-      </p>
-      <p className="ant-upload-text">
-        Click or drag file to this area to upload
-      </p>
-      <p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibited from uploading
-        company data or other banned files.
-      </p>
-    </Dragger>
+    <>
+      <TimeGreeting />
+      <Dragger {...attributes}>
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p className="ant-upload-text">
+          Click or drag file to this area to upload
+        </p>
+        <p className="ant-upload-hint">
+          Support for a single file upload. Currently only PDF files are
+          supported.
+        </p>
+      </Dragger>
+    </>
   );
 };
 

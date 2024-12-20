@@ -34,7 +34,7 @@ app.get("/chat", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: true,
-      message: "Please upload your file",
+      message: `${error} Server Internal Error, please wait for developers to fix it`,
     });
   }
 });
