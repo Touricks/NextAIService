@@ -39,16 +39,15 @@ const App = () => {
           style={{
             display: "flex",
             alignItems: "center",
+            color: "black",
           }}
         >
-          <Title style={{ color: "white " }}>Next AI</Title>
+          <Title style={{ color: "white" }}>Next AI</Title>
         </Header>
         <Content style={{ width: "80%", margin: "auto" }}>
           <div style={pdfUploaderStyle}>
             <PdfUploader />
           </div>
-
-          <br />
           <br />
           <div style={renderQAStyle}>
             <RenderQA conversation={conversation} isLoading={isLoading} />

@@ -1,28 +1,26 @@
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { RetrievalQAChain } from "langchain/chains";
+import { LLMChain, RetrievalQAChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate } from "langchain/prompts";
-
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
 // NOTE: change this default filePath to any of your default file name
-const chat = async (filePath, query) => {
-  // step 1:
+export const fileBasedChat = async (
+  filePath, // The path to the file
+  query
+) => {
   const loader = new PDFLoader(filePath);
 
   const data = await loader.load();
 
-  // step 2:
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: 500, //  (in terms of number of characters)
     chunkOverlap: 0,
   });
 
   const splitDocs = await textSplitter.splitDocuments(data);
-
-  // step 3
 
   const embeddings = new OpenAIEmbeddings({
     openAIApiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -33,8 +31,6 @@ const chat = async (filePath, query) => {
     embeddings
   );
 
-  // step 4: retrieval
-  // step 5: customzie the prompt
   const model = new ChatOpenAI({
     modelName: "gpt-3.5-turbo",
     openAIApiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -50,7 +46,6 @@ Helpful Answer:`;
 
   const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(), {
     prompt: PromptTemplate.fromTemplate(template),
-    // returnSourceDocuments: true,
   });
 
   const response = await chain.call({
@@ -58,6 +53,45 @@ Helpful Answer:`;
   });
 
   return response;
+};
+
+export const directChat = async (query) => {
+  try {
+    const template = `Answer the following question concisely. Use three sentences maximum and keep the answer straightforward.
+    Question: {question}
+    Helpful Answer:`;
+    const model = new ChatOpenAI({
+      modelName: "gpt-3.5-turbo",
+      openAIApiKey: process.env.REACT_APP_OPENAI_API_KEY,
+    });
+    const prompt = PromptTemplate.fromTemplate(template);
+    const chain = new LLMChain({
+      llm: model,
+      prompt: prompt,
+    });
+    const response = await chain.call({ question: query });
+    return response;
+  } catch (error) {
+    console.error("Error in directChat:", error);
+    throw error;
+  }
+};
+
+export const chat = async (filePath, query) => {
+  try {
+    if (filePath) {
+      return await fileBasedChat(filePath, query);
+    } else {
+      throw error;
+    }
+  } catch (error) {
+    try {
+      return await directChat(query);
+    } catch (error) {
+      console.error("Error in chat:", error);
+      throw error;
+    }
+  }
 };
 
 export default chat;
