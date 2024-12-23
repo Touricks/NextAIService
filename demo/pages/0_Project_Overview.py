@@ -20,21 +20,21 @@ st.header("Key Features")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("#### 💬 Intelligent Chat")
+    st.markdown("##### 💬 Intelligent Chat")
     st.markdown("""
         - Context-aware responses
         - Real-time interaction
     """)
 
 with col2:
-    st.markdown("#### 📄 File Processing")
+    st.markdown("##### 📄 File Processing")
     st.markdown("""
         - Document content analysis
         - Intelligent data extraction
     """)
 
 with col3:
-    st.markdown("#### 🎤 Voice Recognition")
+    st.markdown("##### 🎤 Voice Recognition")
     st.markdown("""
         - Speech-to-text conversion
         - Hands-free operation

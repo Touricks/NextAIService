@@ -8,8 +8,7 @@ st.set_page_config(
 
 st.title("NextAI Service: Intelligent Chat Interface System")
 set_background("demo/asset/background_picture.png")
-# Demo Video
-st.subheader("Demo video")
+
 st.markdown("""
     ### Try out these features:
     1. Ask a basic question about React
@@ -22,4 +21,6 @@ st.markdown("""
     - You need to build .env in folder "server" and put API key inside.
     - For implementation, see "Code Walkthrough" and scan the picture inside to get the API key.
 """)
+# Demo Video
+st.subheader("Demo video")
 st.video("https://www.youtube.com/watch?v=dYkPg-vg9Mk")
