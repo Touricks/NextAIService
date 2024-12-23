@@ -35,7 +35,7 @@ def set_background(image_file):
         color: black;
         background-color: rgba(255, 255, 255, 0.7);
         padding: 1px 3px 1.5px 3px;
-        margin:10px;
+        margin:20px;
         border-radius: 10px;
         font-size: 3em;
     }}
