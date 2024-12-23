@@ -115,16 +115,6 @@ const attributes = {
   onDrop(e) {
     console.log("Dropped files", e.dataTransfer.files);
   },
-  onRemove: async (file) => {
-    try {
-      await deleteFromBackend(file);
-      message.success(`${file.name} removed successfully`);
-      return true;
-    } catch (error) {
-      message.error(`Failed to remove ${file.name}`);
-      return false;
-    }
-  },
 };
 
 const PdfUploader = () => {
