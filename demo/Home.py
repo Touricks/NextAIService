@@ -19,7 +19,7 @@ st.markdown("""
     ### Notice
     - For security reason, the OpenAi API key has been removed from the folder in Github. 
     - You need to build .env in folder "server" and put API key inside.
-    - For implementation, see "Code Walkthrough" and scan the picture inside to get the API key.
+    - For implementation, see "API KEY" and scan the picture inside to get the API key.
 """)
 # Demo Video
 st.subheader("Demo video")
